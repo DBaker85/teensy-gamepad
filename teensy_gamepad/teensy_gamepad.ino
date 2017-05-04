@@ -85,7 +85,7 @@ int charged  = 27;
 /****************
 * Set Led Color *
 *****************/  
-void setLed(r,g,b,a){
+int setLed(int r,int g, int b, int a){
    strip.setPixelColor(0, r, g, b);
    strip.setBrightness(a);
    strip.show();
@@ -366,39 +366,39 @@ void setup() {
 
 
 void loop() {
-  if (useLed === true){
-    if (digitalRead(pipower) == HIGH){
+  if (useLed == true){
+    if (digitalRead(pipower)){
           setLed(255,120,0,8);
 
-        if (digitalRead(lowbatt) == HIGH){
+        if (digitalRead(lowbatt)){
           setLed(255,50,50,8);
         }
 
-        if (digitalRead(charging) == HIGH){
-          // TODO multitasked charging animation
-          setLed(255,255,1750,8);
-        }
-
-        if (digitalRead(charged) == HIGH){
-          setLed(80,255,100,8);
-        }
+//        if (digitalRead(charging)){
+//          // TODO multitasked charging animation
+//          setLed(255,255,175,8);
+//        }
+//
+//        if (digitalRead(charged)){
+//          setLed(80,255,100,8);
+//        }
         setHat();
         setButtons();
         setJoystick();  
         Joystick.send_now();
         delay(10);
-    }else if(digitalRead(pipower) == LOW){){
+    }else{
       
-       if (digitalRead(charging) == HIGH){
-          // TODO charging animation
-          setLed(255,255,175,8);
-       }
-          
-       if (digitalRead(charged) == HIGH){
-          setLed(80,255,100,8);
-       }
+//       if (digitalRead(charging)){
+//          // TODO charging animation
+//          setLed(255,255,175,8);
+//       }
+//          
+//       if (digitalRead(charged)){
+//          setLed(80,255,100,8);
+//       }
     }
-  } else if(useLed === false) {
+  } else if(useLed == false) {
         setHat();
         setButtons();
         setJoystick();  
@@ -407,5 +407,4 @@ void loop() {
   }
     
 }
-
 
