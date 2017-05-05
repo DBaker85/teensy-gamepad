@@ -354,10 +354,10 @@ void setup() {
   *         LED setup                 *
   ************************************/
   
-  pinMode(pipower, INPUT);
-  pinMode(lowbatt, INPUT);
-  pinMode(charging, INPUT);
-  pinMode(charged, INPUT);
+  pinMode(pipower, INPUT_PULLUP);
+  pinMode(lowbatt, INPUT_PULLUP);
+  pinMode(charging, INPUT_PULLUP);
+  pinMode(charged, INPUT_PULLUP);
   strip.begin();
   setLed(0,0,0,0);
   
@@ -367,10 +367,10 @@ void setup() {
 
 void loop() {
   if (useLed == true){
-    if (digitalRead(pipower)){
+    if (digitalRead(pipower) == LOW){
           setLed(255,120,0,8);
 
-        if (digitalRead(lowbatt)){
+        if (digitalRead(lowbatt) == LOW){
           setLed(255,50,50,8);
         }
 
@@ -389,10 +389,10 @@ void loop() {
         delay(10);
     }else{
       
-//       if (digitalRead(charging)){
-//          // TODO charging animation
-//          setLed(255,255,175,8);
-//       }
+      // if (digitalRead(charging)){
+      //    // TODO charging animation
+      //    setLed(255,255,175,8);
+      // }
 //          
 //       if (digitalRead(charged)){
 //          setLed(80,255,100,8);
