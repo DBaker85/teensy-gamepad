@@ -404,14 +404,17 @@ void loop() {
   if (useLed == true){
     strip.begin();
     if (digitalRead(pipower) == HIGH){
-        if (digitalRead(lowbatt) == HIGH){
-          setLed(255,50,50,6);
-        }else if (digitalRead(charging == LOW)){
-          neopixel.Flash();
-        }
-         else {
-          setLed(255,255,175,8);
-        }
+
+      if (digitalRead(charged) == LOW){
+          setLed(0,255,0,6);  
+       } else if (digitalRead(charging) == LOW){
+          neopixel.Flash();  
+       } else if (digitalRead(lowbatt) == HIGH){
+          setLed(255,50,50,6);          
+       } else {
+         setLed(255,255,175,6);
+        
+       }
         setHat();
         setButtons();
         setJoystick();  
@@ -422,9 +425,11 @@ void loop() {
           neopixel.Flash();  
           delay(10);        
        } else if (digitalRead(charged) == LOW){
-          setLed(0,255,0,8);
+          // If battery is charged only update the state every 5 seconds to save power
+          setLed(0,255,0,6);
           delay(5000);
        } else {
+        // add a big delay so that if you are powering the teensy but not charging use low cpu cycles
          setLed(0,0,0,0);
          delay(20000);
        }
