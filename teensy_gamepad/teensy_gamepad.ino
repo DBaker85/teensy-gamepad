@@ -76,12 +76,8 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(1, 25, NEO_RGB + NEO_KHZ800);
 int useLed   = true;
 int pipower  = 29;
 int lowbatt  = 30;
-int charging = 26;
-int charged  = 27;
-
-
-
-
+int charging = 27;
+int charged  = 26;
 /****************
 * Set Led Color *
 *****************/  
@@ -91,6 +87,44 @@ int setLed(int r,int g, int b, int a){
    strip.show();
 };
 
+/****************
+* Led Sweeper *
+*****************/  
+class Sweeper
+{
+  
+  int bright;              // current brightness
+  int increment;        // increment brightness
+  int  updateInterval;      // interval between updates
+  unsigned long lastUpdate; // last update of brightness
+ 
+public: 
+  Sweeper(int interval)
+  {
+    updateInterval = interval;
+    increment = 1;
+  }
+  
+  
+  void Flash()
+  {
+    if((millis() - lastUpdate) > updateInterval)  // time to update
+    {
+      lastUpdate = millis();
+      bright += increment;
+      setLed(255,120,0,bright);
+  
+      if ((bright >= 10) || (bright <= 0)) // end of sweep
+      {
+        // reverse direction
+        increment = -increment;
+      }
+    }
+  }
+};
+ 
+
+Sweeper neopixel(100);
 
 /****************
 * Hat Functions *
@@ -330,6 +364,18 @@ void setJoystick(){
 
 void setup() { 
 
+  
+  
+  /************************************
+  *         LED setup                 *
+  ************************************/
+  
+  pinMode(pipower, INPUT_PULLUP);
+  pinMode(lowbatt, INPUT_PULLUP);
+  pinMode(charging, INPUT_PULLUP);
+  pinMode(charged, INPUT_PULLUP);
+ 
+
   /************************************
   *         Gamepad setup             *
   ************************************/
@@ -350,53 +396,38 @@ void setup() {
   }
 
   
-  /************************************
-  *         LED setup                 *
-  ************************************/
-  
-  pinMode(pipower, INPUT_PULLUP);
-  pinMode(lowbatt, INPUT_PULLUP);
-  pinMode(charging, INPUT_PULLUP);
-  pinMode(charged, INPUT_PULLUP);
-  strip.begin();
-  setLed(0,0,0,0);
-  
 };
 
 
 
 void loop() {
   if (useLed == true){
-    if (digitalRead(pipower) == LOW){
-          setLed(255,120,0,8);
-
-        if (digitalRead(lowbatt) == LOW){
-          setLed(255,50,50,8);
+    strip.begin();
+    if (digitalRead(pipower) == HIGH){
+        if (digitalRead(lowbatt) == HIGH){
+          setLed(255,50,50,6);
+        }else if (digitalRead(charging == LOW)){
+          neopixel.Flash();
         }
-
-//        if (digitalRead(charging)){
-//          // TODO multitasked charging animation
-//          setLed(255,255,175,8);
-//        }
-//
-//        if (digitalRead(charged)){
-//          setLed(80,255,100,8);
-//        }
+         else {
+          setLed(255,255,175,8);
+        }
         setHat();
         setButtons();
         setJoystick();  
         Joystick.send_now();
         delay(10);
-    }else{
-      
-      // if (digitalRead(charging)){
-      //    // TODO charging animation
-      //    setLed(255,255,175,8);
-      // }
-//          
-//       if (digitalRead(charged)){
-//          setLed(80,255,100,8);
-//       }
+    } else if (digitalRead(pipower) == LOW){
+       if (digitalRead(charging) == LOW){
+          neopixel.Flash();  
+          delay(10);        
+       } else if (digitalRead(charged) == LOW){
+          setLed(0,255,0,8);
+          delay(5000);
+       } else {
+         setLed(0,0,0,0);
+         delay(20000);
+       }
     }
   } else if(useLed == false) {
         setHat();
@@ -405,6 +436,7 @@ void loop() {
         Joystick.send_now();
         delay(10);
   }
-    
 }
+    
+
 
